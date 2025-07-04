@@ -34,15 +34,15 @@
 </head>
 <body>
   <h1>🔧 Dat Dora's Tools</h1>
-  <p>Danh sách các công cụ được cập nhật tự động từ repo <code>Personal-Tools</code>:</p>
+  <p>List of my tools:</p>
   <ul id="tool-list">
-    <li class="loading">Đang tải danh sách công cụ...</li>
+    <li class="loading">Loading...</li>
   </ul>
 
   <script>
     const repoUser = 'dat-dora';
-    const repoName = 'Personal-Tools';
-    const repoUrl = `https://api.github.com/repos/${repoUser}/${repoName}/`;
+    const repoName = 'tool';
+    const repoUrl = `https://api.github.com/repos/${repoUser}/${repoName}/contents/`;
 
     fetch(repoUrl)
       .then(response => response.json())
@@ -51,11 +51,11 @@
         toolList.innerHTML = '';
 
         const htmlFiles = data.filter(item =>
-          item.type === 'file' && item.name.endsWith('.html')
+          item.type === 'file' && item.name.endsWith('.html') && item.name.toLowerCase() !== 'index.html'
         );
 
         if (htmlFiles.length === 0) {
-          toolList.innerHTML = '<li>Không có công cụ HTML nào.</li>';
+          toolList.innerHTML = '<li>No tools.</li>';
           return;
         }
 
@@ -70,7 +70,7 @@
       })
       .catch(error => {
         document.getElementById('tool-list').innerHTML =
-          '<li>Lỗi khi tải danh sách công cụ.</li>';
+          '<li>Error while loading tool list.</li>';
         console.error('Error:', error);
       });
   </script>
