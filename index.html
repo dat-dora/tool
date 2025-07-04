@@ -1,43 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Dat Dora's Tools</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🔧 Dat Dora's Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      padding: 40px;
-      background: #f2f2f2;
-      color: #333;
-    }
-    h1 {
+      font-family: 'Inter', sans-serif;
+      background-color: #555555;
       color: #2c3e50;
+      margin: 0;
+      padding: 2rem;
+      line-height: 1.6;
     }
+
+    .container {
+      max-width: 720px;
+      margin: auto;
+      background: #ffffff;
+      padding: 2rem 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    h1::before {
+      content: "🛠️";
+      font-size: 1.5rem;
+    }
+
+    p {
+      margin-top: 0;
+      color: #555;
+    }
+
     ul {
-      padding-left: 20px;
+      list-style: none;
+      padding-left: 0;
+      margin-top: 1.2rem;
     }
+
     li {
-      margin: 8px 0;
+      margin: 10px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+
+    li::before {
+      content: "🧰";
+    }
+
     a {
       color: #007acc;
       text-decoration: none;
+      font-weight: 500;
     }
+
     a:hover {
       text-decoration: underline;
     }
+
     .loading {
       font-style: italic;
-      color: #888;
+      color: #999;
     }
   </style>
 </head>
 <body>
-  <h1>🔧 Dat Dora's Tools</h1>
-  <p>List of my tools:</p>
-  <ul id="tool-list">
-    <li class="loading">Loading...</li>
-  </ul>
+  <div class="container">
+    <h1>Dat Dora's Tools</h1>
+    <p><b>List of my tools:<b></p>
+    <ul id="tool-list">
+      <li class="loading">Loading tools...</li>
+    </ul>
+  </div>
 
   <script>
     const repoUser = 'dat-dora';
@@ -51,11 +96,13 @@
         toolList.innerHTML = '';
 
         const htmlFiles = data.filter(item =>
-          item.type === 'file' && item.name.endsWith('.html') && item.name.toLowerCase() !== 'index.html'
+          item.type === 'file' &&
+          item.name.endsWith('.html') &&
+          item.name.toLowerCase() !== 'index.html'
         );
 
         if (htmlFiles.length === 0) {
-          toolList.innerHTML = '<li>No tools.</li>';
+          toolList.innerHTML = '<li>No HTML tools found.</li>';
           return;
         }
 
@@ -63,14 +110,14 @@
           const li = document.createElement('li');
           const a = document.createElement('a');
           a.href = `https://${repoUser}.github.io/${repoName}/${file.name}`;
-          a.textContent = '🧰 ' + file.name;
+          a.textContent = file.name;
           li.appendChild(a);
           toolList.appendChild(li);
         });
       })
       .catch(error => {
         document.getElementById('tool-list').innerHTML =
-          '<li>Error while loading tool list.</li>';
+          '<li>Error loading tool list.</li>';
         console.error('Error:', error);
       });
   </script>
