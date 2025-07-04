@@ -78,7 +78,7 @@
 <body>
   <div class="container">
     <h1>Dat Dora's Tools</h1>
-    <p>List of my tools (updated every 60 minutes):</p>
+    <p>List of my tools:</p>
     <ul id="tool-list">
       <li class="loading">Loading tools...</li>
     </ul>
@@ -87,59 +87,77 @@
   <script>
     const CACHE_KEY = 'tool_cache';
     const CACHE_TIME_KEY = 'tool_cache_time';
-    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes in milliseconds
-
+    const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+  
     const repoUser = 'dat-dora';
     const repoName = 'tool';
     const repoUrl = `https://api.github.com/repos/${repoUser}/${repoName}/contents/`;
-
+  
     const now = Date.now();
     const lastFetch = parseInt(localStorage.getItem(CACHE_TIME_KEY)) || 0;
     const cachedData = localStorage.getItem(CACHE_KEY);
-
-    function renderToolList(jsonText) {
-      const files = JSON.parse(jsonText);
+  
+    function renderToolListFromArray(arr) {
       const toolList = document.getElementById('tool-list');
       toolList.innerHTML = '';
-
-      const htmlFiles = files.filter(item =>
-        item.type === 'file' &&
-        item.name.endsWith('.html') &&
-        item.name.toLowerCase() !== 'index.html'
-      );
-
-      if (htmlFiles.length === 0) {
-        toolList.innerHTML = '<li>No HTML tools found.</li>';
+  
+      if (!arr.length) {
+        toolList.innerHTML = '<li>No tools found.</li>';
         return;
       }
-
-      htmlFiles.forEach(file => {
+  
+      arr.forEach(tool => {
         const li = document.createElement('li');
         const a = document.createElement('a');
-        a.href = `https://${repoUser}.github.io/${repoName}/${file.name}`;
-        a.textContent = file.name;
+        a.href = tool.url;
+        a.textContent = tool.name;
         li.appendChild(a);
         toolList.appendChild(li);
       });
     }
-
+  
+    function fetchFallbackJson() {
+      fetch('tools.json')
+        .then(res => res.json())
+        .then(data => renderToolListFromArray(data))
+        .catch(() => {
+          document.getElementById('tool-list').innerHTML =
+            '<li>Error loading tools. Please try again later.</li>';
+        });
+    }
+  
+    function convertGitHubData(rawData) {
+      return rawData
+        .filter(item =>
+          item.type === 'file' &&
+          item.name.endsWith('.html') &&
+          item.name.toLowerCase() !== 'index.html'
+        )
+        .map(item => ({
+          name: item.name,
+          url: `https://${repoUser}.github.io/${repoName}/${item.name}`
+        }));
+    }
+  
     if (cachedData && (now - lastFetch < CACHE_TTL)) {
-      // Use cached data
-      renderToolList(cachedData);
+      try {
+        const parsed = JSON.parse(cachedData);
+        renderToolListFromArray(parsed);
+      } catch (e) {
+        fetchFallbackJson();
+      }
     } else {
-      // Fetch fresh data and cache it
       fetch(repoUrl)
         .then(res => res.json())
         .then(data => {
-          const jsonData = JSON.stringify(data);
-          localStorage.setItem(CACHE_KEY, jsonData);
+          const converted = convertGitHubData(data);
+          renderToolListFromArray(converted);
+          localStorage.setItem(CACHE_KEY, JSON.stringify(converted));
           localStorage.setItem(CACHE_TIME_KEY, now.toString());
-          renderToolList(jsonData);
         })
         .catch(err => {
-          console.error('API fetch error:', err);
-          document.getElementById('tool-list').innerHTML =
-            '<li>Error loading tools. Please try again later.</li>';
+          console.error('GitHub API error:', err);
+          fetchFallbackJson();
         });
     }
   </script>
