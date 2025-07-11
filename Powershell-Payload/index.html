@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Payload Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark">
+  <div class="dark-toggle">
+    <button class="toggle-btn" id="theme-toggle" title="Toggle Dark Mode"></button>
+  </div>
+  <h1>PowerShell Payload Generator</h1>
+  <div class="form-group" style="margin-top: 10px">
+    <label>Attacker IP: <input id="ip" value="127.0.0.1"></label>
+    <label>Port: <input id="port" value="1337"></label>
+  </div>
+  <div class="tabs" id="tabs" style="margin-top: 20px"></div>
+
+  <textarea id="raw" rows="18"  placeholder="Raw command"></textarea>
+  <button id="copy-raw">Copy Raw Command</button>
+  
+  <textarea id="base64" rows="10" readonly placeholder="Base64 command"></textarea>
+  <button id="copy">Copy Base64 Command</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
